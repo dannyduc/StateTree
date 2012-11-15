@@ -10,7 +10,7 @@ A statechart is similar to a FSM (finite state machine), but extends the concept
 
 ## Why statecharts?
 
-* even with trying to have multiple FSMs for concurrent states, we would still be missing nested states
+* FSMs lack nested and concurrent states
 * Routing is often used to describe application state. However, routing has difficulty handling concurrent states, handling nested state transitions, and maintaining history of different branches.
 
 
@@ -57,11 +57,11 @@ Changing the state is done with `state.goTo()`
 You do not indicate what the originating state is.
 The state tree 
  * determines which concurrent substate the new state is in and moves within that concurrent substate
- * moves up the tree as necessary, exiting (invoke exit callback for) each state.
+ * moves up the tree as necessary, exiting (invoke exit callback for) each state and setting history states.
  * moves down the tree and enters (invoke enter callback for) each state
 
 
-## Example: Applicaiton & UI state
+## Example: Application & UI state
 
      var chart = makeStateTree()
      var authenticate:State = chart.root.subState("authenticate")
@@ -87,11 +87,22 @@ The state tree
      authenticate.goTo()
 
 
-loggedin has concurrent substates (main and popup)
-tab1 is the default substate of main
-When the user enters the loggedin state, then enter callback will start the main state.
-The main state will enter the tab1 state because it is the default sub state.
-The popup can be opened and closed without effecting the main state.
+* loggedin has concurrent substates (main and popup)
+* tab1 is the default substate of main
+* When the user enters the loggedin state, then enter callback will start the main state.
+* The main state will enter the tab1 state because it is the default sub state.
+* The popup can be opened and closed without effecting the main state.
+
+
+## History states
+
+History states let us know the previous substate so we can easily restore previous application state.
+
+    // access the previous sub-state
+    state.history
+
+    // if there is a history state always go to it instead of the default state
+    chart.defaultToHistoryState()
 
 
 ## Events
